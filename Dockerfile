@@ -3,6 +3,7 @@ MAINTAINER Evonove info@evonove.it
 
 # Environment variables
 ENV NODE_VERSION 0.10.32
+ENV NODE_PATH /usr/local/lib/node_modules/
 ENV NPM_VERSION 2.1.3
 
 # Update system libraries
