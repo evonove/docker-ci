@@ -2,9 +2,9 @@ FROM ubuntu:14.10
 MAINTAINER Evonove info@evonove.it
 
 # Environment variables
-ENV NODE_VERSION 0.10.32
+ENV NODE_VERSION 0.12.0
 ENV NODE_PATH /usr/local/lib/node_modules/
-ENV NPM_VERSION 2.1.3
+ENV NPM_VERSION 2.5.1
 
 # Update system libraries
 RUN apt-get update && apt-get upgrade -y
@@ -46,7 +46,7 @@ RUN apt-get install -y python-dev python-pip python3-dev python3-pip
 RUN apt-get install -y ruby ruby-dev
 RUN gem install compass
 
-RUN gpg --keyserver pgp.mit.edu --recv-keys 7937DFD2AB06298B2293C3187D33FF9D0246406D
+RUN gpg --keyserver pgp.mit.edu --recv-keys 114F43EE0176B71C7BC219DD50A3051F888C628D
 
 RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
   && curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
