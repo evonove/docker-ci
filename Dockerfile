@@ -2,6 +2,7 @@ FROM ubuntu:14.10
 MAINTAINER Evonove info@evonove.it
 
 # Environment variables
+ENV TOX_VERSION 1.9.1
 ENV NODE_VERSION 0.12.0
 ENV NODE_PATH /usr/local/lib/node_modules/
 ENV NPM_VERSION 2.5.1
@@ -39,8 +40,10 @@ RUN apt-get install -y curl socat postgresql-client
 # VCS
 RUN apt-get install -y git
 
-# Python
+# Python with latest 'pip' and 'tox'
 RUN apt-get install -y python-dev python-pip python3-dev python3-pip
+RUN python -m pip install -U pip
+RUN python -m pip install tox==$TOX_VERSION
 
 # Frontend toolchain
 RUN apt-get install -y ruby ruby-dev
