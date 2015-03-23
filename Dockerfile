@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:14.10
 MAINTAINER Evonove info@evonove.it
 
 # Environment variables
