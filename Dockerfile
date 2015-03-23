@@ -2,7 +2,7 @@ FROM ubuntu:14.10
 MAINTAINER Evonove info@evonove.it
 
 # Environment variables
-ENV TOX_VERSION 1.9.1
+ENV TOX_VERSION 1.9.0
 ENV NODE_VERSION 0.12.0
 ENV NODE_PATH /usr/local/lib/node_modules/
 ENV NPM_VERSION 2.5.1
