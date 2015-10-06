@@ -1,5 +1,5 @@
-FROM ubuntu:14.10
-MAINTAINER Evonove info@evonove.it
+FROM ubuntu:15.04
+MAINTAINER Emanuele Palazzetti <hello@palazzetti.me>
 
 # Environment variables
 ENV TOX_VERSION 1.9.0
