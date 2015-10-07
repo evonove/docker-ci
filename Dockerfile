@@ -1,65 +1,68 @@
 FROM ubuntu:15.04
 MAINTAINER Emanuele Palazzetti <hello@palazzetti.me>
 
-# Environment variables
-ENV TOX_VERSION 1.9.0
-ENV NODE_VERSION 0.12.0
+# set the locale
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
+
+# environment
 ENV NODE_PATH /usr/local/lib/node_modules/
-ENV NPM_VERSION 2.5.1
 
-# Update system libraries
-RUN apt-get update && apt-get upgrade -y
+# tools version
+ENV TOX_VERSION 2.1.1
+ENV NODE_VERSION 0.12.7
+ENV NPM_VERSION 3.3.5
 
-# Install all build requirements
-RUN apt-get install -y \
-    autoconf \
-    build-essential \
-    imagemagick \
-    libbz2-dev \
-    libcurl4-openssl-dev \
-    libevent-dev \
-    libffi-dev \
-    libglib2.0-dev \
-    libjpeg-dev \
-    libmagickcore-dev \
-    libmagickwand-dev \
-    libmysqlclient-dev \
-    libncurses-dev \
-    libpq-dev \
-    libreadline-dev \
-    libsqlite3-dev \
-    libssl-dev \
-    libxml2-dev \
-    libxslt-dev \
-    libyaml-dev \
-    zlib1g-dev
+# Update the system with build-in dependencies
+RUN apt-get update \
+  && apt-get upgrade -y \
+  && apt-get install -y \
+       autoconf \
+       build-essential \
+       imagemagick \
+       libbz2-dev \
+       libcurl4-openssl-dev \
+       libevent-dev \
+       libffi-dev \
+       libglib2.0-dev \
+       libjpeg-dev \
+       libmagickcore-dev \
+       libmagickwand-dev \
+       libmysqlclient-dev \
+       libncurses-dev \
+       libpq-dev \
+       libreadline-dev \
+       libsqlite3-dev \
+       libssl-dev \
+       libxml2-dev \
+       libxslt-dev \
+       libyaml-dev \
+       zlib1g-dev \
+       curl \
+       socat \
+       postgresql-client \
+       git \
+       python-dev \
+       python-pip \
+       python3-dev \
+       python3-pip \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
-# Other requirement
-RUN apt-get install -y curl socat postgresql-client
+# tox
+RUN python -m pip install -U pip \
+  && python -m pip install tox==$TOX_VERSION
 
-# VCS
-RUN apt-get install -y git
-
-# Python with latest 'pip' and 'tox'
-RUN apt-get install -y python-dev python-pip python3-dev python3-pip
-RUN python -m pip install -U pip
-RUN python -m pip install tox==$TOX_VERSION
-
-# Frontend toolchain
-RUN apt-get install -y ruby ruby-dev
-RUN gem install compass
-
-RUN gpg --keyserver pgp.mit.edu --recv-keys 114F43EE0176B71C7BC219DD50A3051F888C628D
-
-RUN curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
+# frontend toolchain (node)
+RUN gpg --keyserver pgp.mit.edu --recv-keys 114F43EE0176B71C7BC219DD50A3051F888C628D \
+  && curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
   && curl -SLO "http://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
   && gpg --verify SHASUMS256.txt.asc \
   && grep " node-v$NODE_VERSION-linux-x64.tar.gz\$" SHASUMS256.txt.asc | sha256sum -c - \
   && tar -xzf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 \
   && rm "node-v$NODE_VERSION-linux-x64.tar.gz" SHASUMS256.txt.asc \
-  && npm install -g npm@"$NPM_VERSION"
-
-RUN npm install -g coffee-script gulp bower karma-cli phantomjs protractor
-
-# Clean everything
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* && npm cache clear
+  && npm install -g npm@"$NPM_VERSION" \
+  && npm install -g coffee-script gulp bower karma-cli phantomjs protractor \
+  && npm cache clear
