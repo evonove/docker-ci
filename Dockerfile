@@ -7,9 +7,6 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-# environment
-ENV NODE_PATH /usr/local/lib/node_modules/
-
 # tools version
 ENV TOX_VERSION 2.1.1
 ENV NODE_VERSION 0.12.7
@@ -51,6 +48,17 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
+# environment
+ENV JENKINS_HOME /var/jenkins_home
+ENV NODE_PATH /usr/local/lib/node_modules/
+
+# creating jenkins user
+RUN useradd -d "$JENKINS_HOME" -u 1000 -m -s /bin/bash jenkins
+
+# Use tini as subreaper in Docker container to kill zombie processes
+ENV TINI_SHA 066ad710107dc7ee05d3aa6e4974f01dc98f3888
+RUN curl -fL https://github.com/krallin/tini/releases/download/v0.5.0/tini-static -o /bin/tini && chmod +x /bin/tini \
+  && echo "$TINI_SHA /bin/tini" | sha1sum -c -
 # tox
 RUN python -m pip install -U pip \
   && python -m pip install tox==$TOX_VERSION
@@ -66,3 +74,9 @@ RUN gpg --keyserver pgp.mit.edu --recv-keys 114F43EE0176B71C7BC219DD50A3051F888C
   && npm install -g npm@"$NPM_VERSION" \
   && npm install -g coffee-script gulp bower karma-cli phantomjs protractor \
   && npm cache clear
+
+USER jenkins
+
+# entrypoint required for Jenkins worker
+COPY ./docker-entrypoint.sh /
+ENTRYPOINT ["/bin/tini", "--", "/docker-entrypoint.sh"]
