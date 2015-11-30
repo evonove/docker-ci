@@ -83,9 +83,21 @@ ENV TINI_SHA c4894d809f3e2bdcc9c2e20db037d80b17944fc6
 RUN curl -fL "https://github.com/krallin/tini/releases/download/$TINI_VERSION/tini" -o /bin/tini \
   && chmod +x /bin/tini \
   && echo "$TINI_SHA /bin/tini" | sha1sum -c -
-# tox
-RUN python -m pip install -U pip \
-  && python -m pip install tox==$TOX_VERSION
+
+# installing python requirements
+RUN pip install -U pip=="$PYTHON_PIP_VERSION" \
+  && pip install tox=="$TOX_VERSION"
+
+# installing python interpreters (TODO: move upstairs)
+RUN curl -fL "https://raw.githubusercontent.com/saghul/pythonz/pythonz-$PYTHONZ_VERSION/pythonz-install" | bash \
+  && $PYTHONZ_EXEC install $PYTHON27_VERSION \
+  && $PYTHONZ_EXEC install $PYTHON34_VERSION \
+  && $PYTHONZ_EXEC install $PYTHON35_VERSION \
+  && rm -rf $PYTHONZ_PATH/build/* \
+  && rm -rf $PYTHONZ_PATH/dists/* \
+  && rm -rf $PYTHONZ_PATH/log/* \
+  && find $PYTHONZ_PATH/pythons -name '*.pyc' -delete \
+  && find $PYTHONZ_PATH/pythons -name '*.pyo' -delete
 
 # frontend toolchain (node)
 RUN gpg --keyserver pgp.mit.edu --recv-keys 114F43EE0176B71C7BC219DD50A3051F888C628D \
