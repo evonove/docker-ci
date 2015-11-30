@@ -7,10 +7,29 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-# tools version
-ENV TOX_VERSION 2.1.1
-ENV NODE_VERSION 0.12.7
-ENV NPM_VERSION 3.3.5
+# global environment
+ENV TINI_VERSION v0.8.4
+ENV JENKINS_HOME /var/jenkins_home
+
+# python environment
+ENV PYTHONZ_VERSION 1.10.0
+ENV PYTHONZ_PATH /usr/local/pythonz
+ENV PYTHONZ_EXEC $PYTHONZ_PATH/bin/pythonz
+ENV PYTHON_PIP_VERSION 7.1.2
+ENV TOX_VERSION 2.2.1
+
+# using the installed versions instead of the system python
+ENV PYTHON27_VERSION 2.7.10
+ENV PYTHON34_VERSION 3.4.3
+ENV PYTHON35_VERSION 3.5.0
+ENV PATH $PYTHONZ_PATH/pythons/CPython-$PYTHON27_VERSION/bin:$PATH
+ENV PATH $PYTHONZ_PATH/pythons/CPython-$PYTHON34_VERSION/bin:$PATH
+ENV PATH $PYTHONZ_PATH/pythons/CPython-$PYTHON35_VERSION/bin:$PATH
+
+# environment node
+ENV NODE_VERSION 5.1.0
+ENV NPM_VERSION 3.5.0
+ENV NODE_PATH /usr/local/lib/node_modules/
 
 # Update the system with build-in dependencies
 RUN apt-get update \
@@ -55,10 +74,6 @@ RUN apt-get update \
        python3.5-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
-
-# environment
-ENV JENKINS_HOME /var/jenkins_home
-ENV NODE_PATH /usr/local/lib/node_modules/
 
 # creating jenkins user
 RUN useradd -d "$JENKINS_HOME" -u 1000 -m -s /bin/bash jenkins
