@@ -78,9 +78,10 @@ RUN apt-get update \
 # creating jenkins user
 RUN useradd -d "$JENKINS_HOME" -u 1000 -m -s /bin/bash jenkins
 
-# Use tini as subreaper in Docker container to kill zombie processes
-ENV TINI_SHA 066ad710107dc7ee05d3aa6e4974f01dc98f3888
-RUN curl -fL https://github.com/krallin/tini/releases/download/v0.5.0/tini-static -o /bin/tini && chmod +x /bin/tini \
+# using tini as a zombies processes reaper
+ENV TINI_SHA c4894d809f3e2bdcc9c2e20db037d80b17944fc6
+RUN curl -fL "https://github.com/krallin/tini/releases/download/$TINI_VERSION/tini" -o /bin/tini \
+  && chmod +x /bin/tini \
   && echo "$TINI_SHA /bin/tini" | sha1sum -c -
 # tox
 RUN python -m pip install -U pip \
