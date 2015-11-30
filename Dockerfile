@@ -37,6 +37,13 @@ RUN apt-get update \
        libxslt-dev \
        libyaml-dev \
        zlib1g-dev \
+       libncurses5-dev \
+       libgdbm-dev \
+       libdb-dev \
+       libexpat-dev \
+       libpcap-dev \
+       liblzma-dev \
+       libpcre3-dev \
        curl \
        socat \
        postgresql-client \
@@ -45,6 +52,7 @@ RUN apt-get update \
        python-pip \
        python3-dev \
        python3-pip \
+       python3.5-dev \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
