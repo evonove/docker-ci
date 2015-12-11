@@ -22,9 +22,7 @@ ENV TOX_VERSION 2.2.1
 ENV PYTHON27_VERSION 2.7.10
 ENV PYTHON34_VERSION 3.4.3
 ENV PYTHON35_VERSION 3.5.0
-ENV PATH $PYTHONZ_PATH/pythons/CPython-$PYTHON27_VERSION/bin:$PATH
-ENV PATH $PYTHONZ_PATH/pythons/CPython-$PYTHON34_VERSION/bin:$PATH
-ENV PATH $PYTHONZ_PATH/pythons/CPython-$PYTHON35_VERSION/bin:$PATH
+ENV PATH $JENKINS_HOME/.local/bin:$PATH
 
 # environment node
 ENV NODE_VERSION 5.1.0
@@ -88,7 +86,7 @@ RUN curl -fL "https://github.com/krallin/tini/releases/download/$TINI_VERSION/ti
 RUN pip install -U pip=="$PYTHON_PIP_VERSION" \
   && pip install tox=="$TOX_VERSION"
 
-# installing python interpreters (TODO: move upstairs)
+# installing python interpreters
 RUN curl -fL "https://raw.githubusercontent.com/saghul/pythonz/pythonz-$PYTHONZ_VERSION/pythonz-install" | bash \
   && $PYTHONZ_EXEC install $PYTHON27_VERSION \
   && $PYTHONZ_EXEC install $PYTHON34_VERSION \
@@ -97,7 +95,11 @@ RUN curl -fL "https://raw.githubusercontent.com/saghul/pythonz/pythonz-$PYTHONZ_
   && rm -rf $PYTHONZ_PATH/dists/* \
   && rm -rf $PYTHONZ_PATH/log/* \
   && find $PYTHONZ_PATH/pythons -name '*.pyc' -delete \
-  && find $PYTHONZ_PATH/pythons -name '*.pyo' -delete
+  && find $PYTHONZ_PATH/pythons -name '*.pyo' -delete \
+  && mkdir -p $JENKINS_HOME/.local/bin \
+  && ln -s $PYTHONZ_PATH/pythons/CPython-$PYTHON27_VERSION/bin/python2.7 $JENKINS_HOME/.local/bin/python2.7 \
+  && ln -s $PYTHONZ_PATH/pythons/CPython-$PYTHON34_VERSION/bin/python3.4 $JENKINS_HOME/.local/bin/python3.4 \
+  && ln -s $PYTHONZ_PATH/pythons/CPython-$PYTHON35_VERSION/bin/python3.5 $JENKINS_HOME/.local/bin/python3.5
 
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
