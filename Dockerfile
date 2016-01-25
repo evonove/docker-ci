@@ -33,9 +33,15 @@ ENV NODE_PATH /usr/local/lib/node_modules/
 RUN apt-get update \
   && apt-get upgrade -y \
   && apt-get install -y \
-       autoconf \
        build-essential \
-       imagemagick \
+       git \
+       autoconf \
+       curl \
+       socat \
+       libcairo2 \
+       libpango1.0-0 \
+       libgdk-pixbuf2.0-0 \
+       libffi-dev \
        libbz2-dev \
        libcurl4-openssl-dev \
        libevent-dev \
@@ -45,26 +51,26 @@ RUN apt-get update \
        libmagickcore-dev \
        libmagickwand-dev \
        libmysqlclient-dev \
-       libncurses-dev \
+       libncurses5-dev \
        libpq-dev \
        libreadline-dev \
        libsqlite3-dev \
        libssl-dev \
        libxml2-dev \
-       libxslt-dev \
+       libxslt1-dev \
        libyaml-dev \
-       zlib1g-dev \
        libncurses5-dev \
        libgdbm-dev \
        libdb-dev \
-       libexpat-dev \
+       libexpat1-dev \
        libpcap-dev \
        liblzma-dev \
        libpcre3-dev \
-       curl \
-       socat \
        postgresql-client \
-       git \
+       imagemagick \
+       shared-mime-info \
+       zlib1g-dev \
+       python-lxml \
        python-dev \
        python-pip \
        python3-dev \
