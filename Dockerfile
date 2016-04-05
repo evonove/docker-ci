@@ -8,14 +8,14 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 # global environment
-ENV TINI_VERSION v0.8.4
+ENV TINI_VERSION v0.9.0
 ENV JENKINS_HOME /var/jenkins_home
 
 # python environment
 ENV PYTHONZ_VERSION 1.11.0
 ENV PYTHONZ_PATH /usr/local/pythonz
 ENV PYTHONZ_EXEC $PYTHONZ_PATH/bin/pythonz
-ENV PYTHON_PIP_VERSION 8.0.2
+ENV PYTHON_PIP_VERSION 8.1.1
 ENV TOX_VERSION 2.3.1
 
 # using the installed versions instead of the system python
@@ -25,8 +25,8 @@ ENV PYTHON35_VERSION 3.5.1
 ENV PATH $JENKINS_HOME/.local/bin:$PATH
 
 # environment node
-ENV NODE_VERSION 5.5.0
-ENV NPM_VERSION 3.5.3
+ENV NODE_VERSION 5.10.0
+ENV NPM_VERSION 3.8.5
 ENV NODE_PATH /usr/local/lib/node_modules/
 
 # Update the system with build-in dependencies
@@ -83,7 +83,7 @@ RUN apt-get update \
 RUN useradd -d "$JENKINS_HOME" -u 1000 -m -s /bin/bash jenkins
 
 # using tini as a zombies processes reaper
-ENV TINI_SHA c4894d809f3e2bdcc9c2e20db037d80b17944fc6
+ENV TINI_SHA e00bce884edb1d94a5fcf2423ee92dc05ddce926
 RUN curl -fL "https://github.com/krallin/tini/releases/download/$TINI_VERSION/tini" -o /bin/tini \
   && chmod +x /bin/tini \
   && echo "$TINI_SHA /bin/tini" | sha1sum -c -
