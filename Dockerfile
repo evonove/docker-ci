@@ -76,6 +76,8 @@ RUN apt-get update \
        python3-dev \
        python3-pip \
        python3.5-dev \
+       chromium-browser \
+       xvfb \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
