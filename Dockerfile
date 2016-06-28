@@ -11,6 +11,9 @@ ENV LC_ALL en_US.UTF-8
 ENV TINI_VERSION v0.9.0
 ENV JENKINS_HOME /var/jenkins_home
 
+# versions
+ENV CHROMEDRIVER_VERSION 2.22
+
 # python environment
 ENV PYTHONZ_VERSION 1.11.0
 ENV PYTHONZ_PATH /usr/local/pythonz
@@ -70,6 +73,7 @@ RUN apt-get update \
        imagemagick \
        shared-mime-info \
        zlib1g-dev \
+       unzip \
        python-lxml \
        python-dev \
        python-pip \
@@ -80,6 +84,11 @@ RUN apt-get update \
        xvfb \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
+
+# installing Chrome WebDriver
+RUN curl -SLO "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" \
+  && unzip chromedriver_linux64.zip -d /usr/local/bin \
+  && rm chromedriver_linux64.zip
 
 # creating jenkins user
 RUN useradd -d "$JENKINS_HOME" -u 1000 -m -s /bin/bash jenkins
