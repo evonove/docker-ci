@@ -1,5 +1,5 @@
 FROM ubuntu:15.10
-MAINTAINER Emanuele Palazzetti <hello@palazzetti.me>
+MAINTAINER Evoniners <dev@evonove.it>
 
 # set the locale
 RUN locale-gen en_US.UTF-8
@@ -18,18 +18,18 @@ ENV CHROMEDRIVER_VERSION 2.22
 ENV PYTHONZ_VERSION 1.11.0
 ENV PYTHONZ_PATH /usr/local/pythonz
 ENV PYTHONZ_EXEC $PYTHONZ_PATH/bin/pythonz
-ENV PYTHON_PIP_VERSION 8.1.1
+ENV PYTHON_PIP_VERSION 8.1.2
 ENV TOX_VERSION 2.3.1
 
 # using the installed versions instead of the system python
-ENV PYTHON27_VERSION 2.7.10
-ENV PYTHON34_VERSION 3.4.4
-ENV PYTHON35_VERSION 3.5.1
+ENV PYTHON27_VERSION 2.7.12
+ENV PYTHON34_VERSION 3.4.5
+ENV PYTHON35_VERSION 3.5.2
 ENV PATH $JENKINS_HOME/.local/bin:$PATH
 
 # environment node
-ENV NODE_VERSION 5.10.0
-ENV NPM_VERSION 3.8.5
+ENV NODE_VERSION 6.2.2
+ENV NPM_VERSION 3.10.3
 ENV NODE_PATH /usr/local/lib/node_modules/
 
 # Update the system with build-in dependencies
