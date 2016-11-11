@@ -85,6 +85,13 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
+# Install GDAL, PROJ.4 dependencies of PostGIS
+RUN apt-get update && apt-get install -y \
+    binutils \
+    gdal-bin \
+    libproj-dev \
+ && rm -rf /var/lib/apt/lists/*
+
 # installing Chrome WebDriver
 RUN curl -SLO "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" \
   && unzip chromedriver_linux64.zip -d /usr/local/bin \
