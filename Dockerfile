@@ -19,7 +19,7 @@ ENV PYTHONZ_VERSION 1.11.0
 ENV PYTHONZ_PATH /usr/local/pythonz
 ENV PYTHONZ_EXEC $PYTHONZ_PATH/bin/pythonz
 ENV PYTHON_PIP_VERSION 8.1.2
-ENV TOX_VERSION 2.3.1
+ENV TOX_VERSION 2.5.0
 
 # using the installed versions instead of the system python
 ENV PYTHON27_VERSION 2.7.12
