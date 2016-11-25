@@ -154,6 +154,11 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && npm install -g coffee-script gulp bower karma-cli phantomjs protractor \
   && npm cache clear
 
+# Install gpsbabel
+RUN apt-get update && apt-get install -y \
+    gpsbabel \
+ && rm -rf /var/lib/apt/lists/*
+
 USER jenkins
 
 # entrypoint required for Jenkins worker
