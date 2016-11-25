@@ -86,10 +86,13 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/*
 
 # Install GDAL, PROJ.4 dependencies of PostGIS
+# Install libgdal-dev that provides gdal-config
+# to packages like fiona
 RUN apt-get update && apt-get install -y \
     binutils \
     gdal-bin \
     libproj-dev \
+    libgdal-dev \
  && rm -rf /var/lib/apt/lists/*
 
 # installing Chrome WebDriver
