@@ -1,4 +1,4 @@
-FROM ubuntu:15.10
+FROM ubuntu:16.04
 MAINTAINER Evoniners <dev@evonove.it>
 
 # set the locale
@@ -7,35 +7,11 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
-# global environment
-ENV TINI_VERSION v0.9.0
-ENV JENKINS_HOME /var/jenkins_home
-
-# versions
-ENV CHROMEDRIVER_VERSION 2.22
-
-# python environment
-ENV PYTHONZ_VERSION 1.11.0
-ENV PYTHONZ_PATH /usr/local/pythonz
-ENV PYTHONZ_EXEC $PYTHONZ_PATH/bin/pythonz
-ENV PYTHON_PIP_VERSION 8.1.2
-ENV TOX_VERSION 2.5.0
-
-# using the installed versions instead of the system python
-ENV PYTHON27_VERSION 2.7.12
-ENV PYTHON34_VERSION 3.4.5
-ENV PYTHON35_VERSION 3.5.2
-ENV PATH $JENKINS_HOME/.local/bin:$PATH
-
-# environment node
-ENV NODE_VERSION 6.2.2
-ENV NPM_VERSION 3.10.3
-ENV NODE_PATH /usr/local/lib/node_modules/
-
 # Update the system with build-in dependencies
 RUN apt-get update \
   && apt-get upgrade -y \
   && apt-get install -y \
+       apt-transport-https \
        build-essential \
        git \
        autoconf \
@@ -82,7 +58,6 @@ RUN apt-get update \
        python3.5-dev \
        chromium-browser \
        xvfb \
-  && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
 # Install GDAL, PROJ.4 dependencies of PostGIS
@@ -93,31 +68,44 @@ RUN apt-get update && apt-get install -y \
     gdal-bin \
     libproj-dev \
     libgdal-dev \
+    gpsbabel \
  && rm -rf /var/lib/apt/lists/*
 
-# installing Chrome WebDriver
-RUN curl -SLO "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" \
-  && unzip chromedriver_linux64.zip -d /usr/local/bin \
-  && rm chromedriver_linux64.zip
-
 # creating jenkins user
+ENV JENKINS_HOME /var/jenkins_home
+ENV PATH $JENKINS_HOME/.local/bin:$PATH
 RUN useradd -d "$JENKINS_HOME" -u 1000 -m -s /bin/bash jenkins
 
 # using tini as a zombies processes reaper
-ENV TINI_SHA e00bce884edb1d94a5fcf2423ee92dc05ddce926
+ENV TINI_VERSION v0.13.2
+ENV TINI_SHA a6b5e3211c4f1e33792ea0eed699f2782b15f78f
 RUN curl -fL "https://github.com/krallin/tini/releases/download/$TINI_VERSION/tini" -o /bin/tini \
   && chmod +x /bin/tini \
   && echo "$TINI_SHA /bin/tini" | sha1sum -c -
 
-# installing python requirements
-RUN pip install -U pip=="$PYTHON_PIP_VERSION" \
-  && pip install tox=="$TOX_VERSION"
 
-# installing python interpreters
+#### Python Environment
+
+# Install tox
+ENV TOX_VERSION 2.5.0
+ENV PYTHON_PIP_VERSION 9.0.1
+RUN pip install -U pip=="$PYTHON_PIP_VERSION" \
+    && pip install tox=="$TOX_VERSION"
+
+ENV PYTHONZ_VERSION 2.0.1
+ENV PYTHONZ_PATH /usr/local/pythonz
+ENV PYTHONZ_EXEC $PYTHONZ_PATH/bin/pythonz
+
+# using the installed versions instead of the system python
+ENV PYTHON27_VERSION 2.7.13
+ENV PYTHON34_VERSION 3.4.5
+ENV PYTHON35_VERSION 3.5.2
+ENV PYTHON36_VERSION 3.6.0
 RUN curl -fL "https://raw.githubusercontent.com/saghul/pythonz/pythonz-$PYTHONZ_VERSION/pythonz-install" | bash \
   && $PYTHONZ_EXEC install $PYTHON27_VERSION \
   && $PYTHONZ_EXEC install $PYTHON34_VERSION \
   && $PYTHONZ_EXEC install $PYTHON35_VERSION \
+  && $PYTHONZ_EXEC install $PYTHON36_VERSION \
   && rm -rf $PYTHONZ_PATH/build/* \
   && rm -rf $PYTHONZ_PATH/dists/* \
   && rm -rf $PYTHONZ_PATH/log/* \
@@ -126,14 +114,20 @@ RUN curl -fL "https://raw.githubusercontent.com/saghul/pythonz/pythonz-$PYTHONZ_
   && mkdir -p $JENKINS_HOME/.local/bin \
   && ln -s $PYTHONZ_PATH/pythons/CPython-$PYTHON27_VERSION/bin/python2.7 $JENKINS_HOME/.local/bin/python2.7 \
   && ln -s $PYTHONZ_PATH/pythons/CPython-$PYTHON34_VERSION/bin/python3.4 $JENKINS_HOME/.local/bin/python3.4 \
-  && ln -s $PYTHONZ_PATH/pythons/CPython-$PYTHON35_VERSION/bin/python3.5 $JENKINS_HOME/.local/bin/python3.5
+  && ln -s $PYTHONZ_PATH/pythons/CPython-$PYTHON35_VERSION/bin/python3.5 $JENKINS_HOME/.local/bin/python3.5 \
+  && ln -s $PYTHONZ_PATH/pythons/CPython-$PYTHON36_VERSION/bin/python3.6 $JENKINS_HOME/.local/bin/python3.6
+
+
+#### Node Environment
+ENV NODE_VERSION 6.9.2
+ENV NODE_PATH /usr/local/lib/node_modules/
+ENV NPM_VERSION 4.0.5
 
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
   && for key in \
     9554F04D7259F04124DE6B476D5A82AC7E37093B \
     94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
-    0034A06D9D9B0064CE8ADF6BF1747F4AD2306D93 \
     FD3A5288F042B6850C66B31F09FE44734EB7990E \
     71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
     DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
@@ -151,13 +145,25 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && tar -xzf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 \
   && rm "node-v$NODE_VERSION-linux-x64.tar.gz" SHASUMS256.txt.asc \
   && npm install -g npm@"$NPM_VERSION" \
-  && npm install -g coffee-script gulp bower karma-cli phantomjs protractor \
+  && npm install -g gulp-cli bower \
   && npm cache clear
 
-# Install gpsbabel
+# Install yarn
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
+    && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get install -y \
-    gpsbabel \
+    yarn \
  && rm -rf /var/lib/apt/lists/*
+
+
+#### Other tools
+
+# Install Chrome WebDriver
+ENV CHROMEDRIVER_VERSION 2.27
+RUN curl -SLO "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip" \
+  && unzip chromedriver_linux64.zip -d /usr/local/bin \
+  && rm chromedriver_linux64.zip
+
 
 USER jenkins
 
