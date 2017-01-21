@@ -164,6 +164,12 @@ RUN curl -SLO "http://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/
   && unzip chromedriver_linux64.zip -d /usr/local/bin \
   && rm chromedriver_linux64.zip
 
+# Add --no-sandbox to the chrome launcher, otherwise chrome will crash
+RUN mv /usr/bin/chromium-browser /usr/bin/chromium-browser.ori \
+  && echo '#!/bin/bash' > /usr/bin/chromium-browser \
+  && echo 'exec -a "$0" "/usr/bin/chromium-browser.ori" --no-sandbox "$@"' >> \
+    /usr/bin/chromium-browser \
+  && chmod +x /usr/bin/chromium-browser
 
 USER jenkins
 
