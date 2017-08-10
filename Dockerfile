@@ -1,12 +1,6 @@
 FROM ubuntu:16.04
 MAINTAINER Evoniners <dev@evonove.it>
 
-# set the locale
-RUN locale-gen en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US:en
-ENV LC_ALL en_US.UTF-8
-
 # Update the system with build-in dependencies
 RUN apt-get update \
   && apt-get upgrade -y \
@@ -45,6 +39,7 @@ RUN apt-get update \
        libpcap-dev \
        liblzma-dev \
        libpcre3-dev \
+       locales \
        postgresql-client \
        imagemagick \
        shared-mime-info \
@@ -59,6 +54,12 @@ RUN apt-get update \
        chromium-browser \
        xvfb \
   && rm -rf /var/lib/apt/lists/*
+
+# set the locale
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LANGUAGE en_US:en
+ENV LC_ALL en_US.UTF-8
 
 # Install GDAL, PROJ.4 dependencies of PostGIS
 # Install libgdal-dev that provides gdal-config
@@ -170,6 +171,20 @@ RUN mv /usr/bin/chromium-browser /usr/bin/chromium-browser.ori \
   && echo 'exec -a "$0" "/usr/bin/chromium-browser.ori" --no-sandbox "$@"' >> \
     /usr/bin/chromium-browser \
   && chmod +x /usr/bin/chromium-browser
+
+# Rust environment
+ENV RUST_VERSION 1.19.0
+ENV CARGO_HOME /opt/cargo
+ENV RUSTUP_HOME /opt/rustup
+RUN mkdir $CARGO_HOME && \
+    mkdir $RUSTUP_HOME && \
+    chown -R jenkins $CARGO_HOME && \
+    chown -R jenkins $RUSTUP_HOME && \
+    curl -o $CARGO_HOME/rustup-init -sO https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init && \
+    chmod +x $CARGO_HOME/rustup-init && \
+    $CARGO_HOME/rustup-init -y --default-toolchain $RUST_VERSION && \
+    rm $CARGO_HOME/rustup-init
+ENV PATH $PATH:$CARGO_HOME/bin
 
 USER jenkins
 
