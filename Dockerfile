@@ -186,6 +186,14 @@ RUN mkdir $CARGO_HOME && \
     rm $CARGO_HOME/rustup-init
 ENV PATH $PATH:$CARGO_HOME/bin
 
+# librdkafka
+ENV RDKAFKA_VERSION=0.11.0
+
+# Install librdkafka
+RUN curl -o /root/librdkafka-${RDKAFKA_VERSION}.tar.gz -SL https://github.com/edenhill/librdkafka/archive/v${RDKAFKA_VERSION}.tar.gz && \
+    tar -xzf /root/librdkafka-${RDKAFKA_VERSION}.tar.gz -C /root && \
+    cd /root/librdkafka-${RDKAFKA_VERSION} && ./configure --prefix=/usr && make && make install
+
 USER jenkins
 
 # entrypoint required for Jenkins worker
